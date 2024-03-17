@@ -36,9 +36,15 @@ class ProductBrandRepository implements ProductBrandRepositoryInterface
     {
         $productBrand = ProductBrand::find($id);
 
+        if ($data['delete_logo']) {
+            Storage::disk('public')->delete($productBrand->logo);
+        }
+
         $productBrand->code = $data['code'];
         $productBrand->name = $data['name'];
-        $productBrand->logo = $this->updateLogo($productBrand->logo, $data['logo']);
+        if ($data['logo']) {
+            $productBrand->logo = $this->updateLogo($productBrand->logo, $data['logo']);
+        }
         $productBrand->slug = $data['slug'];
         $productBrand->save();
 

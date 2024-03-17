@@ -88,7 +88,9 @@ class ProductCategoryRepository implements ProductCategoryRepositoryInterface
         $productCategory->parent_id = $data['parent_id'];
         $productCategory->code = $data['code'];
         $productCategory->name = $data['name'];
-        $productCategory->image = $this->updateImage($productCategory->image, $data['image']);
+        if ($data['image']) {
+            $productCategory->image = $this->updateImage($productCategory->image, $data['image']);
+        }
         $productCategory->slug = $data['slug'];
         $productCategory->save();
 
@@ -141,7 +143,7 @@ class ProductCategoryRepository implements ProductCategoryRepositoryInterface
     private function updateImage($oldImage, $newImage): string
     {
         if ($oldImage) {
-            Storage::delete($oldImage);
+            Storage::disk('public')->delete($oldImage);
         }
 
         return $newImage->store('assets/product-categories', 'public');

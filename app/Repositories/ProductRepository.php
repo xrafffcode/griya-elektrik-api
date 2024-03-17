@@ -129,12 +129,7 @@ class ProductRepository implements ProductRepositoryInterface
             $product->product_category_id = $data['product_category_id'];
             $product->product_brand_id = $data['product_brand_id'];
             $product->name = $data['name'];
-
-            if (isset($data['thumbnail'])) {
-                Storage::disk('public')->delete($product->thumbnail);
-                $product->thumbnail = $data['thumbnail']->store('assets/products/thumbnails', 'public');
-            }
-
+            $product->thumbnail = $this->updateThumbnail($product->thumbnail, $data['thumbnail']);
             $product->description = $data['description'];
             $product->price = $data['price'];
             $product->is_featured = $data['is_featured'];
@@ -142,6 +137,9 @@ class ProductRepository implements ProductRepositoryInterface
             $product->slug = $data['slug'];
             $product->save();
 
+            if (count($data['deleted_images']) > 0) {
+                $this->deleteProductImages($data['deleted_images']);
+            }
             if (isset($data['product_images'])) {
                 foreach ($data['product_images'] as $image) {
                     $productImage = new ProductImage();
@@ -231,5 +229,24 @@ class ProductRepository implements ProductRepositoryInterface
         }
 
         return $result->count() == 0 ? true : false;
+    }
+
+    private function updateThumbnail($oldThumbnail, $newThumbnail)
+    {
+        if ($oldThumbnail) {
+            Storage::disk('public')->delete($oldThumbnail);
+        }
+
+        return $newThumbnail->store('assets/products/thumbnails', 'public');
+    }
+
+    private function deleteProductImages(array $imageIds)
+    {
+        $productImages = ProductImage::whereIn('id', $imageIds)->get();
+        foreach ($productImages as $productImage) {
+            Storage::disk('public')->delete($productImage->image);
+        }
+
+        return ProductImage::whereIn('id', $imageIds)->delete();
     }
 }

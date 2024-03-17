@@ -35,8 +35,14 @@ class ClientRepository implements ClientRepositoryInterface
     {
         $client = Client::find($id);
 
+        if ($data['delete_logo']) {
+            Storage::disk('public')->delete($client->logo);
+        }
+
         $client->name = $data['name'];
-        $client->logo = $this->updateLogo($client->logo, $data['logo']);
+        if ($data['logo']) {
+            $client->logo = $this->updateLogo($client->logo, $data['logo']);
+        }
         $client->url = $data['url'];
         $client->save();
 
@@ -48,16 +54,12 @@ class ClientRepository implements ClientRepositoryInterface
         return Client::find($id)->delete();
     }
 
-    private function updateLogo($oldImage, $newImage): string
+    private function updateLogo($oldImage, $newImage)
     {
         if ($oldImage) {
-            Storage::delete($oldImage);
+            Storage::disk('public')->delete($oldImage);
         }
 
-        if ($newImage) {
-            return $newImage->store('assets/clients', 'public');
-        }
-
-        return '';
+        return $newImage->store('assets/clients', 'public');
     }
 }

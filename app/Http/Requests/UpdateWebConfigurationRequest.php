@@ -16,7 +16,14 @@ class UpdateWebConfigurationRequest extends FormRequest
         return [
             'title' => 'required|max:255|string',
             'description' => 'required|max:255|string',
-            'logo' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ];
+    }
+
+    public function prepareForValidation()
+    {
+        if (! $this->hasFile('logo')) {
+            $this->merge(['logo' => null]);
+        }
     }
 }

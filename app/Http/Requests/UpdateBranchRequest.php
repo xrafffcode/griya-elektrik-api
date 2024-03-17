@@ -30,6 +30,8 @@ class UpdateBranchRequest extends FormRequest
             'is_active' => 'required|boolean',
             'branch_images' => 'nullable|array',
             'branch_images.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'deleted_images' => 'nullable|array',
+            'deleted_images.*' => 'string|exists:branch_images,id',
         ];
     }
 
@@ -53,6 +55,14 @@ class UpdateBranchRequest extends FormRequest
 
         if (! $this->has('youtube')) {
             $this->merge(['youtube' => null]);
+        }
+
+        if (! $this->has('branch_images')) {
+            $this->merge(['branch_images' => null]);
+        }
+
+        if (! $this->has('deleted_images')) {
+            $this->merge(['deleted_images' => []]);
         }
     }
 }

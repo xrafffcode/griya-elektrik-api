@@ -433,6 +433,54 @@ class ProductAPITest extends TestCase
         $this->assertTrue(Storage::disk('public')->exists($productUpdate['thumbnail']));
     }
 
+    public function test_product_api_call_update_change_brand_expect_succesful()
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user);
+
+        $productCategory = ProductCategory::factory()->create();
+
+        $productBrands = ProductBrand::factory()->count(2)->create();
+        $oldProductBrand = $productBrands->first();
+        $newProductBrand = $productBrands->last();
+
+        $product = Product::factory()
+            ->for($productCategory, 'category')
+            ->for($oldProductBrand, 'brand')
+            ->create();
+
+        $productUpdate = $product->toArray();
+        $productUpdate['product_brand_id'] = $newProductBrand->id;
+
+        $api = $this->json('POST', 'api/v1/product/'.$product->id, $productUpdate);
+
+        $api->assertSuccessful();
+
+        $productUpdate['thumbnail'] = $api['data']['thumbnail'];
+
+        // $this->assertDatabaseHas(
+        //     'products', $productUpdate
+        // );
+
+        $this->assertDatabaseHas(
+            'products', [
+                'code' => $productUpdate['code'],
+                'product_category_id' => $productUpdate['product_category_id'],
+                'product_brand_id' => $productUpdate['product_brand_id'],
+                'name' => $productUpdate['name'],
+                'thumbnail' => $productUpdate['thumbnail'],
+                'description' => $productUpdate['description'],
+                'price' => $productUpdate['price'],
+                'is_featured' => $productUpdate['is_featured'],
+                'is_active' => $productUpdate['is_active'],
+                'slug' => $productUpdate['slug'],
+            ]
+        );
+
+        $this->assertTrue(Storage::disk('public')->exists($productUpdate['thumbnail']));
+    }
+
     public function test_product_api_call_set_active_product_expect_successful()
     {
         $user = User::factory()->create();

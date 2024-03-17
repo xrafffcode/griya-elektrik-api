@@ -17,7 +17,7 @@ class UpdateProductCategoryRequest extends FormRequest
             'parent_id' => 'nullable|exists:product_categories,id',
             'code' => 'required|string|max:255|unique:product_categories,code,'.$this->route('id'),
             'name' => 'required|string|max:255',
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'slug' => 'nullable|string|max:255|unique:product_categories,slug,'.$this->route('id'),
         ];
     }
@@ -30,6 +30,10 @@ class UpdateProductCategoryRequest extends FormRequest
 
         if (! $this->has('slug')) {
             $this->merge(['slug' => null]);
+        }
+
+        if (! $this->has('image')) {
+            $this->merge(['image' => null]);
         }
     }
 }

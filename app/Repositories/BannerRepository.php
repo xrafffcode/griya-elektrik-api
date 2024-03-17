@@ -31,8 +31,14 @@ class BannerRepository implements BannerRepositoryInterface
     public function updateBanner($data, $id)
     {
         $banner = Banner::find($id);
-        $banner->desktop_image = $this->updateImage($banner->desktop_image, $data['desktop_image']);
-        $banner->mobile_image = $this->updateImage($banner->mobile_image, $data['mobile_image']);
+
+        if ($data['desktop_image']) {
+            $banner->desktop_image = $this->updateImage($banner->desktop_image, $data['desktop_image']);
+        }
+        if ($data['mobile_image']) {
+            $banner->mobile_image = $this->updateImage($banner->mobile_image, $data['mobile_image']);
+        }
+
         $banner->save();
 
         return $banner;

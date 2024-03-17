@@ -21,6 +21,8 @@ class UpdateProductRequest extends FormRequest
             'slug' => 'nullable|string|max:255|unique:products,slug,'.$this->route('id').',id',
             'product_images' => 'nullable|array',
             'product_images.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'deleted_images' => 'nullable|array',
+            'deleted_images.*' => 'string|distinct|exists:product_images,id',
             'product_links' => 'nullable|array',
             'product_links.*.name' => 'required|string|max:255',
             'product_links.*.url' => 'required|url',
@@ -31,6 +33,10 @@ class UpdateProductRequest extends FormRequest
     {
         if (! $this->has('slug')) {
             $this->merge(['slug' => null]);
+        }
+
+        if (! $this->has('deleted_images')) {
+            $this->merge(['deleted_images' => []]);
         }
     }
 }

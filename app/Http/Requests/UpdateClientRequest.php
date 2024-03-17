@@ -16,6 +16,7 @@ class UpdateClientRequest extends FormRequest
         return [
             'name' => 'required|string|max:255|unique:clients,name,'.$this->route('id').',id',
             'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'delete_logo' => 'nullable|boolean',
             'url' => 'nullable|url',
         ];
     }
@@ -24,6 +25,10 @@ class UpdateClientRequest extends FormRequest
     {
         if (! $this->hasFile('logo')) {
             $this->merge(['logo' => null]);
+        }
+
+        if (! $this->has('delete_logo')) {
+            $this->merge(['delete_logo' => false]);
         }
 
         if (! $this->has('url')) {

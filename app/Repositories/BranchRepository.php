@@ -82,7 +82,9 @@ class BranchRepository implements BranchRepositoryInterface
             $branch->is_active = $data['is_active'];
             $branch->save();
 
-            $this->deleteBranchImages($branch);
+            if (count($data['deleted_images']) > 0) {
+                $this->deleteBranchImages($data['deleted_images']);
+            }
             if (isset($data['branch_images'])) {
                 foreach ($data['branch_images'] as $image) {
                     $branchImage = new BranchImage();
@@ -165,22 +167,13 @@ class BranchRepository implements BranchRepositoryInterface
         return $result->count() == 0;
     }
 
-    private function updateBranchImage($oldImage, $newImage): string
+    private function deleteBranchImages(array $imageIds)
     {
-        if ($oldImage !== $newImage) {
-            Storage::disk('public')->delete($oldImage);
-        }
-
-        return $newImage->store('assets/branches/images', 'public');
-    }
-
-    private function deleteBranchImages($branch)
-    {
-        $branchImages = $branch->branchImages;
+        $branchImages = BranchImage::whereIn('id', $imageIds)->get();
         foreach ($branchImages as $branchImage) {
             Storage::disk('public')->delete($branchImage->image);
         }
 
-        return $branch->branchImages()->delete();
+        return BranchImage::whereIn('id', $imageIds)->delete();
     }
 }

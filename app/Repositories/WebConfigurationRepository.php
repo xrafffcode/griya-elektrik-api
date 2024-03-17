@@ -18,7 +18,9 @@ class WebConfigurationRepository implements WebConfigurationRepositoryInterface
         $webConfiguration = WebConfiguration::first();
         $webConfiguration->title = $data['title'];
         $webConfiguration->description = $data['description'];
-        $webConfiguration->logo = $this->updateLogo($webConfiguration->logo, $data['logo']);
+        if ($data['logo']) {
+            $webConfiguration->logo = $this->updateLogo($webConfiguration->logo, $data['logo']);
+        }
         $webConfiguration->save();
 
         return $webConfiguration;

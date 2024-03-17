@@ -14,8 +14,8 @@ class UpdateBannerRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'desktop_image' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:5120',
-            'mobile_image' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:5120',
+            'desktop_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:5120',
+            'mobile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:5120',
         ];
     }
 }
